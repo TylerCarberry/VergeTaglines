@@ -1,0 +1,19 @@
+*.class
+target
+/bin/
+/.settings/
+.project
+.classpath
+
+# Package Files
+*.jar
+*.war
+*.ear
+
+# Serverless directories
+.serverless
+
+.DS_Store
+node_modules
+.idea/workspace.xml
+src/main/java/com/serverless/Ids.java

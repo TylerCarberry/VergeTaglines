@@ -1,0 +1,29 @@
+service: VergeTaglines
+
+provider:
+  name: aws
+  runtime: java8
+  stage: dev
+  region: us-east-1
+  memorySize: 256
+  timeout: 30
+  logRetentionInDays: 30
+
+package:
+  artifact: target/hello-dev.jar
+  include:
+    - src/**
+  exclude:
+    - .git/**
+
+functions:
+  run:
+    handler: com.serverless.Handler
+    name: VergeTaglines
+    description: Runs the twitter bot @VergeTaglines
+
+    events:
+      - schedule:
+        name: Every 10 minutes
+        rate: rate(10 minutes)
+        enabled: true
