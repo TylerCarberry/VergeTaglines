@@ -4,7 +4,7 @@
 A Twitter bot that automatically tweets the current header of [theverge.com](https://theverge.com)
 
 ### How it works
-Every 10 minutes an AWS Cloudwatch timer triggers an AWS Lambda function. It then scrapes the current homepage of [theverge.com](https://theverge.com) and stores it into the database. If the tagline has changed, it tweets out the current homepage. The screenshots are genreated using [Screenshot Layer](https://screenshotlayer.com). 
+Every 10 minutes an AWS Cloudwatch timer triggers an AWS Lambda function. It then scrapes the current homepage of [theverge.com](https://theverge.com) and stores it into the database. If the tagline has changed, it tweets out the current homepage. The screenshots are generated using [Screenshot Layer](https://screenshotlayer.com). 
 
   
 
