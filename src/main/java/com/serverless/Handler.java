@@ -19,6 +19,7 @@ public class Handler implements RequestHandler<Map<String, Object>, Void> {
 			new TaglineManager().run();
 		} catch (Exception e) {
 			LOG.error(e);
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 

@@ -6,8 +6,8 @@ provider:
   stage: dev
   region: us-east-1
   memorySize: 256
-  timeout: 30
-  logRetentionInDays: 30
+  timeout: 59
+  logRetentionInDays: 90
 
 package:
   artifact: target/hello-dev.jar

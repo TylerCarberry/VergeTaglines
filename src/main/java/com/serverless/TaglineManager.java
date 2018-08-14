@@ -11,6 +11,8 @@ import org.sql2o.Sql2o;
 import twitter4j.*;
 import twitter4j.api.TweetsResources;
 import twitter4j.auth.AccessToken;
+import twitter4j.conf.Configuration;
+import twitter4j.conf.ConfigurationBuilder;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,13 +47,14 @@ public class TaglineManager {
         return !allFromDatabase.contains(tagline);
     }
 
-    private Twitter getTwitterInstance() throws TwitterException {
-        Twitter twitter = TwitterFactory.getSingleton();
-
-        if (twitter.getOAuthAccessToken() == null) {
-            twitter.setOAuthConsumer(Ids.TWITTER_CONSUMER_KEY, Ids.TWITTER_CONSUMER_SECRET);
-            twitter.setOAuthAccessToken(new AccessToken(Ids.TWITTER_ACCESS_TOKEN_KEY, Ids.TWITTER_ACCESS_TOKEN_SECRET));
-        }
+    private Twitter getTwitterInstance() {
+        ConfigurationBuilder builder = new ConfigurationBuilder();
+        builder.setOAuthConsumerKey(Ids.TWITTER_CONSUMER_KEY);
+        builder.setOAuthConsumerSecret(Ids.TWITTER_CONSUMER_SECRET);
+        Configuration configuration = builder.build();
+        TwitterFactory factory = new TwitterFactory(configuration);
+        Twitter twitter = factory.getInstance();
+        twitter.setOAuthAccessToken(new AccessToken(Ids.TWITTER_ACCESS_TOKEN_KEY, Ids.TWITTER_ACCESS_TOKEN_SECRET));
         return twitter;
     }
 
@@ -121,8 +124,12 @@ public class TaglineManager {
         Twitter twitter = getTwitterInstance();
 
         TweetsResources tweetsResources = twitter.tweets();
+
+        LOG.debug("Uploading screenshot");
         UploadedMedia screenshot = tweetsResources.uploadMedia("Screenshot.png", urlToInputStream(getScreenshotUrl()));
+        LOG.debug("Uploading background");
         UploadedMedia background = tweetsResources.uploadMedia("Background.png", urlToInputStream(tagline.getBackground()));
+        LOG.debug("Finished uploaded media");
 
         String whatToPost = tagline.getText();
         if (tagline.getHref() != null && tagline.getHref().length() > 5) {
