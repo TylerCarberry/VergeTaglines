@@ -71,7 +71,7 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
-      - run: npm install serverless
+      - run: npm install -g serverless
       - run: mvn clean
       - run: mvn compile
       - run: mvn package
