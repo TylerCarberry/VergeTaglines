@@ -42,7 +42,7 @@ jobs:
 
   deploy:
     docker:
-      - image: timbru31/java-node
+      - image: kdvolder/mvn-plus-npm
       
 
     working_directory: ~/repo
