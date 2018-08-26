@@ -29,6 +29,9 @@ jobs:
           - v1-dependencies-{{ checksum "pom.xml" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
+          
+      # The API keys are not tracked in git, write them from environment variables
+      - run: echo $VERGE_IDS_JAVA > src/main/java/com/serverless/google-services.json
 
       - run: mvn dependency:go-offline
 

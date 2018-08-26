@@ -75,13 +75,13 @@ public class TaglineManager {
     }
 
     private String getScreenshotUrl() {
-        String accessKey = Ids.SCREENSHOT_LAYER_API_KEY;
+        String screenshotLayerApiKey = Ids.getScreenshotLayerApiKey();
         // Screenshot layer and twitter are caching images. This is used to regenerate the screenshot
         String randomParam = "" + randomLetter() + randomLetter() + randomLetter();
         String encodedUrl = "https%3A%2F%2Fwww.theverge.com";
         String cssUrl = "https://gist.githubusercontent.com/TylerCarberry/50ebef6ac7b67c7cf8fa6371a8724c18/raw/800fe13e01b778607e8943e4886b73fbebd58907/adblock.css";
 
-        return "http://api.screenshotlayer.com/api/capture?access_key=" + accessKey + "&url=" + encodedUrl + "&viewport=1024x280&width=1024&force=1&ttl=2000&delay=5&css_url=" + cssUrl;
+        return "http://api.screenshotlayer.com/api/capture?access_key=" + screenshotLayerApiKey + "&url=" + encodedUrl + "&viewport=1024x280&width=1024&force=1&ttl=2000&delay=5&css_url=" + cssUrl;
     }
 
     private List<Tagline> getAllFromDatabase() {

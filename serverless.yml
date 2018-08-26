@@ -10,7 +10,7 @@ provider:
   logRetentionInDays: 90
 
 package:
-  artifact: target/hello-dev.jar
+  artifact: target/taglines-dev.jar
   include:
     - src/**
   exclude:
