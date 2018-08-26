@@ -4,15 +4,9 @@
 #
 version: 2
 jobs:
-  build:
+  test:
     docker:
-      # specify the version you desire here
       - image: circleci/openjdk:8-jdk
-      
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
 
     working_directory: ~/repo
 
@@ -44,3 +38,54 @@ jobs:
       
       - store_test_results:
            path: target/surefire-reports/
+           
+
+  deploy:
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    working_directory: ~/repo
+
+    environment:
+      # Customize the JVM maximum heap limit
+      MAVEN_OPTS: -Xmx3200m
+    
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "pom.xml" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+          
+      # The API keys are not tracked in git, write them from environment variables
+      - run: echo $VERGE_IDS_JAVA > src/main/java/com/serverless/Ids.java
+
+      - run: mvn dependency:go-offline
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+
+      - run: serverless deploy
+      
+      - store_test_results:
+           path: target/surefire-reports/
+
+workflows:
+  version: 2
+  build-test-deploy:
+    jobs:
+      - test
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - release
+
+
