@@ -47,17 +47,6 @@ public class TaglineManager {
         return !allFromDatabase.contains(tagline);
     }
 
-    private Twitter getTwitterInstance() {
-        ConfigurationBuilder builder = new ConfigurationBuilder();
-        builder.setOAuthConsumerKey(Ids.TWITTER_CONSUMER_KEY);
-        builder.setOAuthConsumerSecret(Ids.TWITTER_CONSUMER_SECRET);
-        Configuration configuration = builder.build();
-        TwitterFactory factory = new TwitterFactory(configuration);
-        Twitter twitter = factory.getInstance();
-        twitter.setOAuthAccessToken(new AccessToken(Ids.TWITTER_ACCESS_TOKEN_KEY, Ids.TWITTER_ACCESS_TOKEN_SECRET));
-        return twitter;
-    }
-
     /**
      * @return the current tagline from the homepage of theverge.com
      * @throws IOException If the bot is unable to connect to the website
@@ -122,7 +111,7 @@ public class TaglineManager {
     }
 
     private Status postToTwitter(Tagline tagline) throws IOException, TwitterException {
-        Twitter twitter = getTwitterInstance();
+        Twitter twitter = TwitterInstance.getTwitterInstance();
 
         TweetsResources tweetsResources = twitter.tweets();
 
@@ -138,7 +127,15 @@ public class TaglineManager {
         }
 
         StatusUpdate statusUpdate = new StatusUpdate(whatToPost);
-        statusUpdate.setMediaIds(screenshot.getMediaId(), background.getMediaId());
+
+        // Sometimes the header background is a gif
+        if (tagline.getBackground().toLowerCase().endsWith("gif")) {
+            // Twitter doesn't allow you to post both a gif (the background) and
+            // a picture (the screenshot). If this is the case, just post the pic background.
+            statusUpdate.setMediaIds(background.getMediaId());
+        } else {
+            statusUpdate.setMediaIds(screenshot.getMediaId(), background.getMediaId());
+        }
 
         return twitter.updateStatus(statusUpdate);
     }
