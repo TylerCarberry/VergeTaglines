@@ -42,8 +42,7 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/openjdk:8-jdk
-      - image: circleci/node:10-browsers
+      - image: timbru31/java-node
       
 
     working_directory: ~/repo
