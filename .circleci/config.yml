@@ -43,6 +43,8 @@ jobs:
   deploy:
     docker:
       - image: circleci/openjdk:8-jdk
+      - image: circleci/node:10-browsers
+      
 
     working_directory: ~/repo
 
@@ -70,6 +72,7 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
+      - run: npm install serverless
       - run: mvn clean
       - run: mvn compile
       - run: mvn package
