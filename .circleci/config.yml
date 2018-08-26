@@ -31,7 +31,7 @@ jobs:
           - v1-dependencies-
           
       # The API keys are not tracked in git, write them from environment variables
-      - run: echo $VERGE_IDS_JAVA > src/main/java/com/serverless/Ids.json
+      - run: echo $VERGE_IDS_JAVA > src/main/java/com/serverless/Ids.java
 
       - run: mvn dependency:go-offline
 
