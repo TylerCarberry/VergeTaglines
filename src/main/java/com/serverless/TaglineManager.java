@@ -85,22 +85,18 @@ public class TaglineManager {
     }
 
     private List<Tagline> getAllFromDatabase() {
-        Sql2o sql2o = new Sql2o("jdbc:mysql://" + Ids.DATABASE_HOST + ":3306/" + Ids.DATABASE_DB, Ids.DATABASE_USER, Ids.DATABASE_PASSWORD);
-
         String sql = "SELECT text, href, background FROM taglines";
 
-        try (Connection con = sql2o.open()) {
+        try (Connection con = getDatabaseConnection().open()) {
             return con.createQuery(sql).executeAndFetch(Tagline.class);
         }
 
     }
 
     private void addTaglineToDatabase(Tagline tagline) {
-        Sql2o sql2o = new Sql2o("jdbc:mysql://" + Ids.DATABASE_HOST + ":3306/" + Ids.DATABASE_DB, Ids.DATABASE_USER, Ids.DATABASE_PASSWORD);
-
         final String insertQuery = "INSERT INTO taglines (text, href, background)  VALUES (:text, :href, :background)";
 
-        try (Connection con = sql2o.beginTransaction()) {
+        try (Connection con = getDatabaseConnection().beginTransaction()) {
             con.createQuery(insertQuery)
                     .addParameter("text", tagline.getText())
                     .addParameter("href", tagline.getHref())
@@ -138,6 +134,10 @@ public class TaglineManager {
         }
 
         return twitter.updateStatus(statusUpdate);
+    }
+
+    private Sql2o getDatabaseConnection() {
+        return new Sql2o("jdbc:mysql://" + Ids.DATABASE_HOST + ":3306/" + Ids.DATABASE_DB + "?useUnicode=yes&characterEncoding=UTF-8", Ids.DATABASE_USER, Ids.DATABASE_PASSWORD);
     }
 
 }
