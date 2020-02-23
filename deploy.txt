@@ -1,0 +1,4 @@
+gcloud builds submit --tag gcr.io/vergetaglines/vergetaglines
+gcloud run deploy --image gcr.io/vergetaglines/vergetaglines --platform managed
+
+https://cloud.google.com/run/docs/quickstarts/build-and-deploy

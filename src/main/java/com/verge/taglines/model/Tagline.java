@@ -1,4 +1,6 @@
-package com.serverless.model;
+package com.verge.taglines.model;
+
+import java.util.Objects;
 
 public class Tagline {
 
@@ -46,9 +48,9 @@ public class Tagline {
 
         Tagline tagline1 = (Tagline) o;
 
-        if (text != null ? !text.equals(tagline1.text) : tagline1.text != null) return false;
-        if (href != null ? !href.equals(tagline1.href) : tagline1.href != null) return false;
-        return background != null ? background.equals(tagline1.background) : tagline1.background == null;
+        if (!Objects.equals(text, tagline1.text)) return false;
+        if (!Objects.equals(href, tagline1.href)) return false;
+        return Objects.equals(background, tagline1.background);
     }
 
     @Override
