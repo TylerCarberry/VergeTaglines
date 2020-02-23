@@ -1,0 +1,29 @@
+name: Build and Deploy to Google Cloud Run
+
+on:
+  push:
+    branches:
+    - master
+    - develop
+
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    - name: Build project
+      run: mvn package
+
+    - name: Deploy service to Cloud Run
+      uses: stefda/action-cloud-run@1.0.0
+      with:
+        image: gcr.io/vergetaglines/vergetaglines
+        service: vergetaglines
+        project: vergetaglines
+        region: us-east1
+        service key: ${{ secrets.GCLOUD_AUTH }}
