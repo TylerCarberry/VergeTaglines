@@ -19,7 +19,7 @@ jobs:
       run: mvn package
 
     - name: Deploy service to Cloud Run
-      uses: stefda/action-cloud-run@1.0
+      uses: stefda/action-cloud-run@v1.0
       with:
         image: gcr.io/vergetaglines/vergetaglines
         service: vergetaglines
