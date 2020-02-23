@@ -17,12 +17,15 @@ jobs:
     
     - name: Build project
       run: mvn package
+    
+    - name: Authenticate gcloud service account
+      run: |
+        gcloud config set project vergetaglines
+        gcloud config set account githubactions@vergetaglines.iam.gserviceaccount.com
+        echo ${{ secrets.GCLOUD_AUTH }} | base64 --decode > gcloud.json
+        gcloud auth activate-service-account --key-file=gcloud.json --project=vergetaglines
+    - name: Submit build to Google Cloud
+      run: gcloud builds submit --tag gcr.io/vergetaglines/vergetaglines
 
-    - name: Deploy service to Cloud Run
-      uses: stefda/action-cloud-run@v1.0
-      with:
-        image: gcr.io/vergetaglines/vergetaglines
-        service: vergetaglines
-        project: vergetaglines
-        region: us-east1
-        service key: ${{ secrets.GCLOUD_AUTH }}
+    - name: Deploy to Google Cloud Run  
+      run: gcloud beta run deploy vergetaglines --image gcr.io/vergetaglines/vergetaglines --platform managed --allow-unauthenticated --region us-east1
