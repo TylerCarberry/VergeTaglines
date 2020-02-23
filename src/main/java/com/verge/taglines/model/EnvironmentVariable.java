@@ -1,4 +1,4 @@
-package com.serverless;
+package com.verge.taglines.model;
 
 public enum EnvironmentVariable {
 
@@ -24,7 +24,7 @@ public enum EnvironmentVariable {
         return id;
     }
 
-    public String getVariable() {
+    public String getValue() {
         return System.getenv(id);
     }
 

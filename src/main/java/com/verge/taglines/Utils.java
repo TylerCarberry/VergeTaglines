@@ -1,4 +1,4 @@
-package com.serverless;
+package com.verge.taglines;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
