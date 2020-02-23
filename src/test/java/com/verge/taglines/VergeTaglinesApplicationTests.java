@@ -20,9 +20,4 @@ public class VergeTaglinesApplicationTests {
 		assertTrue(true);
 	}
 
-	@Test
-	public void testTwitterInstanceIsSingleton() {
-		assert TwitterInstance.getTwitterInstance() == TwitterInstance.getTwitterInstance();
-	}
-
 }
