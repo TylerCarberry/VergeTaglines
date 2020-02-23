@@ -1,0 +1,39 @@
+name: Build and Deploy
+
+on: push
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    - name: Run tests
+      run: mvn test
+      
+  deploy:
+    name: Deploy to Google Cloud Run
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: github.ref == 'master'
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    - name: Build project
+      run: mvn package
+    
+    - name: Authenticate gcloud service account
+      run: |
+        gcloud config set project vergetaglines
+        gcloud config set account githubactions@vergetaglines.iam.gserviceaccount.com
+        echo ${{ secrets.GCLOUD_AUTH }} | base64 --decode > gcloud.json
+        gcloud auth activate-service-account --key-file=gcloud.json --project=vergetaglines
+        
+    - name: Submit build to Google Cloud
+      run: gcloud builds submit --tag gcr.io/vergetaglines/vergetaglines
+
+    - name: Deploy to Google Cloud Run  
+      run: gcloud beta run deploy vergetaglines --image gcr.io/vergetaglines/vergetaglines --platform managed --allow-unauthenticated --region us-east1
