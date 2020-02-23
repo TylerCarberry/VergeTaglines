@@ -15,10 +15,12 @@ public class VergeTaglinesApplicationTests {
 	public void contextLoads() {
 	}
 
+	@Test
 	public void testAlwaysPasses() {
 		assertTrue(true);
 	}
 
+	@Test
 	public void testTwitterInstanceIsSingleton() {
 		assert TwitterInstance.getTwitterInstance() == TwitterInstance.getTwitterInstance();
 	}
