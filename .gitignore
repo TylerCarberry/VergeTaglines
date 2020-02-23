@@ -17,3 +17,5 @@ target
 node_modules
 .idea/workspace.xml
 src/main/java/com/serverless/Ids.java
+
+.idea/

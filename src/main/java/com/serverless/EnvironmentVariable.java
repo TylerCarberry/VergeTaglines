@@ -1,0 +1,31 @@
+package com.serverless;
+
+public enum EnvironmentVariable {
+
+    DATABASE_HOST("VERGE_TAGLINES_DATABASE_HOST"),
+    DATABASE_SCHEMA("VERGE_TAGLINES_DATABASE_SCHEMA"),
+    DATABASE_USER("VERGE_TAGLINES_DATABASE_USER"),
+    DATABASE_PASSWORD("VERGE_TAGLINES_DATABASE_PASSWORD"),
+    TWITTER_API_KEY("VERGE_TAGLINES_TWITTER_API_KEY"),
+    TWITTER_API_SECRET_KEY("VERGE_TAGLINES_TWITTER_API_SECRET_KEY"),
+    TWITTER_ACCESS_TOKEN("VERGE_TAGLINES_TWITTER_ACCESS_TOKEN"),
+    TWITTER_ACCESS_TOKEN_SECRET("VERGE_TAGLINES_TWITTER_ACCESS_TOKEN_SECRET"),
+    SCREENSHOT_LAYER_API_KEY("SCREENSHOT_LAYER_API_KEY"),
+    SCREENSHOT_LAYER_FALLBACK_API_KEY("SCREENSHOT_LAYER_FALLBACK_API_KEY")
+    ;
+
+    private String id;
+
+    EnvironmentVariable(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getVariable() {
+        return System.getenv(id);
+    }
+
+}

@@ -21,12 +21,12 @@ public class TwitterInstance {
         }
 
         ConfigurationBuilder builder = new ConfigurationBuilder();
-        builder.setOAuthConsumerKey(Ids.TWITTER_CONSUMER_KEY);
-        builder.setOAuthConsumerSecret(Ids.TWITTER_CONSUMER_SECRET);
+        builder.setOAuthConsumerKey(System.getenv(Ids.TWITTER_API_KEY));
+        builder.setOAuthConsumerSecret(System.getenv(Ids.TWITTER_API_SECRET_KEY));
         Configuration configuration = builder.build();
         TwitterFactory factory = new TwitterFactory(configuration);
         Twitter twitter = factory.getInstance();
-        twitter.setOAuthAccessToken(new AccessToken(Ids.TWITTER_ACCESS_TOKEN_KEY, Ids.TWITTER_ACCESS_TOKEN_SECRET));
+        twitter.setOAuthAccessToken(new AccessToken(System.getenv(Ids.TWITTER_ACCESS_TOKEN), System.getenv(Ids.TWITTER_ACCESS_TOKEN_SECRET)));
 
         INSTANCE = twitter;
         return INSTANCE;

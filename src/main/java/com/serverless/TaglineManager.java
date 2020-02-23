@@ -1,6 +1,7 @@
 package com.serverless;
 
 import com.serverless.model.Tagline;
+import com.sun.tools.doclint.Env;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -75,13 +76,13 @@ public class TaglineManager {
     }
 
     private String getScreenshotUrl() {
-        String screenshotLayerApiKey = Ids.getScreenshotLayerApiKey();
+        EnvironmentVariable screenshotLayerApiKey = Math.random() < 0.5 ? EnvironmentVariable.SCREENSHOT_LAYER_API_KEY : EnvironmentVariable.SCREENSHOT_LAYER_FALLBACK_API_KEY;
         // Screenshot layer and twitter are caching images. This is used to regenerate the screenshot
         String randomParam = "" + randomLetter() + randomLetter() + randomLetter();
         String encodedUrl = "https%3A%2F%2Fwww.theverge.com";
         String cssUrl = "https://gist.githubusercontent.com/TylerCarberry/50ebef6ac7b67c7cf8fa6371a8724c18/raw/800fe13e01b778607e8943e4886b73fbebd58907/adblock.css";
 
-        return "http://api.screenshotlayer.com/api/capture?access_key=" + screenshotLayerApiKey + "&url=" + encodedUrl + "&viewport=1200x300&width=1024&force=1&ttl=2000&delay=5&css_url=" + cssUrl;
+        return "http://api.screenshotlayer.com/api/capture?access_key=" + screenshotLayerApiKey.getVariable() + "&url=" + encodedUrl + "&viewport=1200x300&width=1024&force=1&ttl=2000&delay=5&css_url=" + cssUrl;
     }
 
     private List<Tagline> getAllFromDatabase() {
@@ -137,7 +138,12 @@ public class TaglineManager {
     }
 
     private Sql2o getDatabaseConnection() {
-        return new Sql2o("jdbc:mysql://" + Ids.DATABASE_HOST + ":3306/" + Ids.DATABASE_DB + "?useUnicode=yes&characterEncoding=UTF-8", Ids.DATABASE_USER, Ids.DATABASE_PASSWORD);
+        return new Sql2o(String.format("jdbc:mysql://%s:3306/%s?useUnicode=yes&characterEncoding=UTF-8",
+                EnvironmentVariable.DATABASE_HOST.getVariable(),
+                EnvironmentVariable.DATABASE_SCHEMA.getVariable()),
+                EnvironmentVariable.DATABASE_USER.getVariable(),
+                EnvironmentVariable.DATABASE_PASSWORD.getVariable()
+        );
     }
 
 }
