@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.3.RELEASE</version>
+		<version>2.3.3.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.verge</groupId>
@@ -37,68 +37,79 @@
 			</exclusions>
 		</dependency>
 
-
+		<!-- https://github.com/aws/aws-lambda-java-libs/blob/master/aws-lambda-java-core/RELEASE.CHANGELOG.md -->
+		<!-- https://github.com/aws/aws-lambda-java-libs/blob/master/aws-lambda-java-log4j2/RELEASE.CHANGELOG.md -->
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-lambda-java-log4j2</artifactId>
-			<version>1.1.0</version>
+			<version>1.2.0</version>
 		</dependency>
+
+		<!-- https://logging.apache.org/log4j/2.x/changelog.html -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.13.2</version>
+			<version>2.13.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.8.2</version>
+			<version>2.13.3</version>
 		</dependency>
+
+		<!-- https://github.com/FasterXML/jackson/wiki/Jackson-Releases -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.9.4</version>
+			<version>2.11.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.9.10.5</version>
+			<version>2.11.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>2.9.4</version>
+			<version>2.11.2</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+
+		<!-- https://github.com/jhy/jsoup/blob/master/CHANGES -->
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.11.3</version>
+			<version>1.13.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.twitter4j/twitter4j-core -->
+
+		<!-- https://github.com/Twitter4J/Twitter4J/releases -->
 		<dependency>
 			<groupId>org.twitter4j</groupId>
 			<artifactId>twitter4j-core</artifactId>
-			<version>4.0.6</version>
+			<version>4.0.7</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.sql2o/sql2o -->
+
+		<!-- https://github.com/aaberg/sql2o/releases -->
 		<dependency>
 			<groupId>org.sql2o</groupId>
 			<artifactId>sql2o</artifactId>
-			<version>1.5.4</version>
+			<version>1.6.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+
+		<!-- https://dev.mysql.com/doc/relnotes/connector-j/8.0/en/ -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.16</version>
+			<version>8.0.21</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+
+		<!-- https://junit.org/junit5/docs/snapshot/release-notes/ -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.2.0</version>
+			<version>5.6.2</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
