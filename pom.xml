@@ -88,6 +88,13 @@
 			<version>4.0.7</version>
 		</dependency>
 
+		<!-- https://github.com/Diluv/Schoomp -->
+		<dependency>
+			<groupId>com.diluv.schoomp</groupId>
+			<artifactId>Schoomp</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+
 		<!-- https://github.com/aaberg/sql2o/releases -->
 		<dependency>
 			<groupId>org.sql2o</groupId>

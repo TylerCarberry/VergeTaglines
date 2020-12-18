@@ -26,7 +26,6 @@ public class TaglineManager {
 
     public void run() throws Exception {
         Tagline tagline = getCurrentTagline();
-
         LOG.debug(String.format("Current tagline: %s", tagline));
 
         if (isNewTagline(tagline)) {
@@ -35,10 +34,10 @@ public class TaglineManager {
             LOG.debug("Added to database");
             Status status = postToTwitter(tagline);
             LOG.debug("Tweeted " + status);
+            new DiscordLogger().postOnDiscord(tagline, "https://twitter.com/VergeTaglines/status/" + status.getId());
         } else {
             LOG.debug("Old tagline");
         }
-
     }
 
     private boolean isNewTagline(Tagline tagline) {
