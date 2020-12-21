@@ -23,20 +23,25 @@ import static com.verge.taglines.Utils.urlToInputStream;
 public class TaglineManager {
 
     private static final Logger LOG = LogManager.getLogger(Handler.class);
+    private DiscordLogger discordLogger = new DiscordLogger();
 
-    public void run() throws Exception {
+    public String run() throws Exception {
         Tagline tagline = getCurrentTagline();
-        LOG.debug(String.format("Current tagline: %s", tagline));
+        LOG.info(String.format("Current tagline: %s", tagline));
 
         if (isNewTagline(tagline)) {
-            LOG.debug("New tagline");
+            log("New tagline");
+            log(String.format("`%s`", tagline));
             addTaglineToDatabase(tagline);
-            LOG.debug("Added to database");
+            log("Added to database");
             Status status = postToTwitter(tagline);
-            LOG.debug("Tweeted " + status);
-            new DiscordLogger().postOnDiscord(tagline, "https://twitter.com/VergeTaglines/status/" + status.getId());
+            log(String.format("Tweeted `%s`", status));
+            String tweetUrl = "https://twitter.com/VergeTaglines/status/" + status.getId();
+            new DiscordLogger().postOnDiscord(tagline, tweetUrl);
+            return tweetUrl;
         } else {
-            LOG.debug("Old tagline");
+            LOG.info("Old tagline");
+            return "Old tagline";
         }
     }
 
@@ -109,11 +114,11 @@ public class TaglineManager {
 
         TweetsResources tweetsResources = twitter.tweets();
 
-        LOG.debug("Uploading screenshot");
+        log("Uploading screenshot");
         UploadedMedia screenshot = tweetsResources.uploadMedia("Screenshot.png", urlToInputStream(getScreenshotUrl()));
-        LOG.debug("Uploading background");
+        log("Uploading background");
         UploadedMedia background = tweetsResources.uploadMedia("Background.png", urlToInputStream(tagline.getBackground()));
-        LOG.debug("Finished uploaded media");
+        log("Finished uploaded media");
 
         String whatToPost = tagline.getText();
         if (tagline.getHref() != null && tagline.getHref().length() > 5) {
@@ -141,6 +146,15 @@ public class TaglineManager {
                 EnvironmentVariable.DATABASE_USER.getValue(),
                 EnvironmentVariable.DATABASE_PASSWORD.getValue()
         );
+    }
+
+    private void log(String message) {
+        LOG.info(message);
+        try {
+            discordLogger.logToDiscord(message);
+        } catch (IOException e) {
+            LOG.error("Unable to post to discord", e);
+        }
     }
 
 }

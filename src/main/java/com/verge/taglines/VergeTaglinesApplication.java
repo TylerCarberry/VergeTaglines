@@ -17,8 +17,7 @@ public class VergeTaglinesApplication {
 		@GetMapping("/")
 		String run() {
 			try {
-				new TaglineManager().run();
-				return "@VergeTaglines";
+				return new TaglineManager().run();
 			} catch (Exception e) {
 				return e.toString();
 			}
