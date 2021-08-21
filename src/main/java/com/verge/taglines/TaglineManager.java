@@ -88,7 +88,7 @@ public class TaglineManager {
     }
 
     private List<Tagline> getAllFromDatabase() {
-        String sql = "SELECT text, href, background FROM taglines";
+        String sql = "SELECT text, href, background FROM taglines ORDER BY timestamp DESC LIMIT 100";
 
         try (Connection con = getDatabaseConnection().open()) {
             return con.createQuery(sql).executeAndFetch(Tagline.class);
