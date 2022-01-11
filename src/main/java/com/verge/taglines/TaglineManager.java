@@ -45,11 +45,6 @@ public class TaglineManager {
         }
     }
 
-    private boolean isNewTagline(Tagline tagline) {
-        List<Tagline> allFromDatabase = getAllFromDatabase();
-        return !allFromDatabase.contains(tagline);
-    }
-
     /**
      * @return the current tagline from the homepage of theverge.com
      * @throws IOException If the bot is unable to connect to the website
@@ -87,17 +82,22 @@ public class TaglineManager {
         return "http://api.screenshotlayer.com/api/capture?access_key=" + screenshotLayerApiKey.getValue() + "&url=" + encodedUrl + "&viewport=1200x300&width=1024&force=1&ttl=2000&delay=5&css_url=" + cssUrl;
     }
 
-    private List<Tagline> getAllFromDatabase() {
-        String sql = "SELECT text, href, background FROM taglines ORDER BY timestamp DESC LIMIT 100";
+    private boolean isNewTagline(Tagline tagline) {
+        String sql = "SELECT text, href, background FROM taglines " +
+                "WHERE href = :href AND background = :background AND text = :text";
 
         try (Connection con = getDatabaseConnection().open()) {
-            return con.createQuery(sql).executeAndFetch(Tagline.class);
+            List<Tagline> matchingTaglines = con.createQuery(sql)
+                    .addParameter("href", tagline.getHref())
+                    .addParameter("background", tagline.getBackground())
+                    .addParameter("text", tagline.getText())
+                    .executeAndFetch(Tagline.class);
+            return matchingTaglines.isEmpty();
         }
-
     }
 
     private void addTaglineToDatabase(Tagline tagline) {
-        final String insertQuery = "INSERT INTO taglines (text, href, background)  VALUES (:text, :href, :background)";
+        final String insertQuery = "INSERT INTO taglines (text, href, background) VALUES (:text, :href, :background)";
 
         try (Connection con = getDatabaseConnection().beginTransaction()) {
             con.createQuery(insertQuery)
