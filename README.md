@@ -7,7 +7,7 @@ A Twitter bot that tweets the current header and tagline of [theverge.com](https
 - The program is hosted on [Google Cloud Run](https://cloud.google.com/run) and is triggered every 10 minutes using [Cloud Scheduler](https://cloud.google.com/scheduler)
 - The homepage of [theverge.com](https://theverge.com) is scraped using [JSoup](https://jsoup.org/)
 - The header and tagline are saved to a MySQL database
-- A screenshot is generated using [Screenshot Layer](https://screenshotlayer.com)
+- A screenshot is generated using [ApiFlash](https://apiflash.com)
 - If the header or tagline have changed, a tweet is sent using [Twitter4j](http://twitter4j.org/en/)
 
   
