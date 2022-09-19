@@ -80,7 +80,7 @@ public class TaglineManager {
 
         String iphoneUserAgent = "Mozilla%2F5.0%20%28iPhone%3B%20CPU%20iPhone%20OS%2012_2%20like%20Mac%20OS%20X%29%20AppleWebKit%2F605.1.15%20%28KHTML%2C%20like%20Gecko%29%20Mobile%2F15E148";
         String url = "https://api.apiflash.com/v1/urltoimage?" +
-                "access_key=" + screenshotApiKey +
+                "access_key=" + screenshotApiKey.getValue() +
                 "&url=" + encoded +
                 "&format=png" +
                 "&width=720" +
