@@ -1,8 +1,8 @@
 package com.verge.taglines;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -24,5 +24,12 @@ public class Utils {
 
     public static InputStream urlToInputStream(String url) throws IOException {
         return new URL(url).openStream();
+    }
+
+    public static InputStream pngToInputStream(BufferedImage image) throws IOException {
+        BufferedImage croppedImage = image.getSubimage(0, 0, image.getWidth(), image.getWidth());
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        ImageIO.write(croppedImage, "png", stream);
+        return new ByteArrayInputStream(stream.toByteArray());
     }
 }
