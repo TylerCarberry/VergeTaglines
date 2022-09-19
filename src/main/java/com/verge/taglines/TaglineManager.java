@@ -87,14 +87,18 @@ public class TaglineManager {
                 "&height=720" +
                 "&fresh=true" +
                 "&user_agent=" + iphoneUserAgent +
-                "&delay=10" +
+                "&delay=5" +
                 "&response_type=json";
+
+        log(url);
 
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestProperty("accept", "application/json");
 
         InputStream responseStream = connection.getInputStream();
         ScreenshotResponse response = new ObjectMapper().readValue(responseStream, ScreenshotResponse.class);
+        log("Finished taking screenshot. " + response.url);
+
         BufferedImage image = ImageIO.read(new URL(response.url));
         return Utils.pngToInputStream(image);
     }
