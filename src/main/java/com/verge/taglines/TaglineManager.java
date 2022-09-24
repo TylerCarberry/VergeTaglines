@@ -87,7 +87,7 @@ public class TaglineManager {
                 "&height=720" +
                 "&fresh=true" +
                 //"&user_agent=" + iphoneUserAgent +
-                "&delay=10" +
+                //"&delay=10" +
                 "&response_type=json";
 
         log(url);
