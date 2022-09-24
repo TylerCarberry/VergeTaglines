@@ -92,7 +92,7 @@
 		<dependency>
 			<groupId>com.diluv.schoomp</groupId>
 			<artifactId>Schoomp</artifactId>
-			<version>1.2.5</version>
+			<version>1.2.6</version>
 		</dependency>
 
 		<!-- https://github.com/aaberg/sql2o/releases -->
