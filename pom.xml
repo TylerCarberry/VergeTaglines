@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>org.twitter4j</groupId>
 			<artifactId>twitter4j-core</artifactId>
-			<version>4.0.7</version>
+			<version>4.1.2</version>
 		</dependency>
 
 		<!-- https://github.com/Diluv/Schoomp -->
