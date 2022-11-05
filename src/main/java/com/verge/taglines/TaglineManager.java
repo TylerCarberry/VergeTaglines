@@ -10,10 +10,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import twitter4j.*;
-import twitter4j.api.TweetsResources;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -23,6 +23,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Handler;
 
@@ -33,10 +34,20 @@ public class TaglineManager {
     private final DiscordLogger discordLogger = new DiscordLogger();
 
     public String run() throws Exception {
-        Tagline tagline = getCurrentTagline();
-        LOG.info(String.format("Current tagline: %s", tagline));
+        Tagline tagline = null;
 
-        if (isNewTagline(tagline)) {
+        Tagline elonJetStatus = getElonJetStatus();
+        if (elonJetStatus != null && isNewElonTagline(elonJetStatus)) {
+            tagline = elonJetStatus;
+        } else {
+            Tagline vergeTagline = getCurrentTagline();
+            LOG.info(String.format("Current tagline: %s", vergeTagline));
+            if (isNewVergeTagline(vergeTagline)) {
+                tagline = vergeTagline;
+            }
+        }
+
+        if (tagline != null) {
             log("New tagline");
             log(String.format("`%s`", tagline));
             addTaglineToDatabase(tagline);
@@ -74,6 +85,27 @@ public class TaglineManager {
         return new Tagline(taglineText, href, null);
     }
 
+    @Nullable
+    private Tagline getElonJetStatus() {
+        String verifiedImage = "https://user-images.githubusercontent.com/6628497/200092588-ce4b4679-90f2-4e60-9752-66302cd4cf21.png";
+        String bannedImage = "https://user-images.githubusercontent.com/6628497/200090687-b0ab14a0-13c2-412c-afaa-369e66360aed.png";
+
+        try {
+            Twitter twitterInstance = TwitterInstance.getTwitterInstance();
+            User elonJet = twitterInstance.showUser("elonjet");
+            if (elonJet.isVerified()) {
+                return new Tagline("@elonjet is now verified on Twitter", null, verifiedImage);
+            }
+        } catch (TwitterException e) {
+            log("Twitter exception " + e);
+            boolean hasUserBeenSuspended = e.getMessage().toLowerCase().contains("user has been suspended");
+            if (hasUserBeenSuspended) {
+                return new Tagline("@elonmusk has suspended @elonjet's Twitter account", null, bannedImage);
+            }
+        }
+        return null;
+    }
+
     private InputStream getScreenshot(@NonNull String href) throws IOException {
         EnvironmentVariable screenshotApiKey = Math.random() < 0.5 ? EnvironmentVariable.SCREENSHOT_API_KEY : EnvironmentVariable.SCREENSHOT_FALLBACK_API_KEY;
         String encoded = URLEncoder.encode(href, StandardCharsets.UTF_8.toString());
@@ -103,14 +135,27 @@ public class TaglineManager {
         return Utils.pngToInputStream(image);
     }
 
-    private boolean isNewTagline(Tagline tagline) {
-        String sql = "SELECT text, href FROM taglines " +
+    private boolean isNewVergeTagline(Tagline tagline) {
+        String sql = "SELECT text, href, background FROM taglines " +
                 "WHERE href = :href AND text = :text";
 
         try (Connection con = getDatabaseConnection().open()) {
             List<Tagline> matchingTaglines = con.createQuery(sql)
                     .addParameter("href", tagline.getHref())
                     .addParameter("text", tagline.getText())
+                    .executeAndFetch(Tagline.class);
+            return matchingTaglines.isEmpty();
+        }
+    }
+
+    private boolean isNewElonTagline(Tagline tagline) {
+        String sql = "SELECT text, href, background FROM taglines " +
+                "WHERE text = :text AND background = :background";
+
+        try (Connection con = getDatabaseConnection().open()) {
+            List<Tagline> matchingTaglines = con.createQuery(sql)
+                    .addParameter("text", tagline.getText())
+                    .addParameter("background", tagline.getBackground())
                     .executeAndFetch(Tagline.class);
             return matchingTaglines.isEmpty();
         }
@@ -132,21 +177,44 @@ public class TaglineManager {
     private Status postToTwitter(Tagline tagline) throws IOException, TwitterException {
         Twitter twitter = TwitterInstance.getTwitterInstance();
 
-        TweetsResources tweetsResources = twitter.tweets();
-
-        log("Uploading screenshot");
-        UploadedMedia screenshot = tweetsResources.uploadMedia("Screenshot.png", getScreenshot(tagline.getHref()));
-        log("Finished uploaded media");
-
         String whatToPost = tagline.getText();
         if (tagline.getHref() != null && tagline.getHref().length() > 5) {
             whatToPost += " " + tagline.getHref();
         }
 
         StatusUpdate statusUpdate = new StatusUpdate(whatToPost);
-        statusUpdate.setMediaIds(screenshot.getMediaId());
+        List<UploadedMedia> uploadedMediaList = uploadMedia(tagline);
+        if (!uploadedMediaList.isEmpty()) {
+            long[] mediaId = uploadedMediaList.stream().mapToLong(UploadedMedia::getMediaId).toArray();
+            statusUpdate.setMediaIds(mediaId);
+        }
 
         return twitter.updateStatus(statusUpdate);
+    }
+
+    private List<UploadedMedia> uploadMedia(Tagline tagline) throws IOException, TwitterException {
+        List<UploadedMedia> uploadedMediaList = new ArrayList<>();
+
+        Twitter twitter = TwitterInstance.getTwitterInstance();
+        if (tagline.getHref() != null) {
+            log("Uploading screenshot");
+            UploadedMedia screenshot = twitter.tweets().uploadMedia("Screenshot.png", getScreenshot(tagline.getHref()));
+            uploadedMediaList.add(screenshot);
+            log("Finished uploaded screenshot");
+        } else {
+            log("No screenshot to upload");
+        }
+
+        if (tagline.getBackground() != null) {
+            log("Uploading background");
+            UploadedMedia screenshot = twitter.tweets().uploadMedia("Background.png", Utils.urlToInputStream(tagline.getBackground()));
+            uploadedMediaList.add(screenshot);
+            log("Finished uploaded background");
+        } else {
+            log("No background to upload");
+        }
+
+        return uploadedMediaList;
     }
 
     private Sql2o getDatabaseConnection() {
