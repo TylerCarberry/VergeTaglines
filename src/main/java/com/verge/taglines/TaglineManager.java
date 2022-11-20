@@ -1,5 +1,6 @@
 package com.verge.taglines;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.verge.taglines.model.EnvironmentVariable;
 import com.verge.taglines.model.ScreenshotResponse;
@@ -8,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.sql2o.Connection;
@@ -24,7 +24,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Handler;
 
 
@@ -73,16 +75,25 @@ public class TaglineManager {
                 .header("User-Agent", "@VergeTaglines")
                 .get();
 
-        Element taglineElement = homepage.select(".duet--recirculation--storystream-header").select("a").get(0);
-        String href = null;
+        String nextData = homepage.getElementById("__NEXT_DATA__").html();
 
-        try {
-            href = taglineElement.attr("href");
-        } catch (Exception e) {
-            // No href
-        }
-        String taglineText = taglineElement.text();
-        return new Tagline(taglineText, href, null);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        // hacky parsing
+        Map<String, Object> map = mapper.readValue(nextData, new TypeReference<HashMap>() {});
+        Map props = (Map) map.get("props");
+        Map pageProps = (Map) props.get("pageProps");
+        Map hydration = (Map) pageProps.get("hydration");
+        List responses = (List) hydration.get("responses");
+        Map data = (Map) ((Map) responses.get(0)).get("data");
+        Map cellData = (Map) data.get("cellData");
+        Map prestoComponentData = (Map) cellData.get("prestoComponentData");
+
+        String tagline = (String) prestoComponentData.getOrDefault("masthead_tagline", null);
+        String url = (String) prestoComponentData.getOrDefault("masthead_tagline_url", null);
+
+        return new Tagline(tagline, url, null);
     }
 
     @Nullable
