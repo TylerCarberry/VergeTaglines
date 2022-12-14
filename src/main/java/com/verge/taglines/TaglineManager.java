@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import twitter4j.*;
@@ -36,20 +35,10 @@ public class TaglineManager {
     private final DiscordLogger discordLogger = new DiscordLogger();
 
     public String run() throws Exception {
-        Tagline tagline = null;
+        Tagline tagline = getCurrentTagline();
 
-        Tagline elonJetStatus = getElonJetStatus();
-        if (elonJetStatus != null && isNewElonTagline(elonJetStatus)) {
-            tagline = elonJetStatus;
-        } else {
-            Tagline vergeTagline = getCurrentTagline();
-            LOG.info(String.format("Current tagline: %s", vergeTagline));
-            if (isNewVergeTagline(vergeTagline)) {
-                tagline = vergeTagline;
-            }
-        }
-
-        if (tagline != null) {
+        LOG.info(String.format("Current tagline: %s", tagline));
+        if (isNewTagline(tagline)) {
             log("New tagline");
             log(String.format("`%s`", tagline));
             addTaglineToDatabase(tagline);
@@ -96,27 +85,6 @@ public class TaglineManager {
         return new Tagline(tagline, url, null);
     }
 
-    @Nullable
-    private Tagline getElonJetStatus() {
-        String verifiedImage = "https://user-images.githubusercontent.com/6628497/200092588-ce4b4679-90f2-4e60-9752-66302cd4cf21.png";
-        String bannedImage = "https://user-images.githubusercontent.com/6628497/200090687-b0ab14a0-13c2-412c-afaa-369e66360aed.png";
-
-        try {
-            Twitter twitterInstance = TwitterInstance.getTwitterInstance();
-            User elonJet = twitterInstance.showUser("elonjet");
-            if (elonJet.isVerified()) {
-                return new Tagline("@elonjet is now verified on Twitter", null, verifiedImage);
-            }
-        } catch (TwitterException e) {
-            log("Twitter exception " + e);
-            boolean hasUserBeenSuspended = e.getMessage().toLowerCase().contains("user has been suspended");
-            if (hasUserBeenSuspended) {
-                return new Tagline("@elonmusk has suspended @elonjet's Twitter account", null, bannedImage);
-            }
-        }
-        return null;
-    }
-
     private InputStream getScreenshot(@NonNull String href) throws IOException {
         EnvironmentVariable screenshotApiKey = Math.random() < 0.5 ? EnvironmentVariable.SCREENSHOT_API_KEY : EnvironmentVariable.SCREENSHOT_FALLBACK_API_KEY;
         String encoded = URLEncoder.encode(href, StandardCharsets.UTF_8.toString());
@@ -146,7 +114,7 @@ public class TaglineManager {
         return Utils.pngToInputStream(image);
     }
 
-    private boolean isNewVergeTagline(Tagline tagline) {
+    private boolean isNewTagline(Tagline tagline) {
         String sql = "SELECT text, href, background FROM taglines " +
                 "WHERE href = :href AND text = :text";
 
@@ -154,19 +122,6 @@ public class TaglineManager {
             List<Tagline> matchingTaglines = con.createQuery(sql)
                     .addParameter("href", tagline.getHref())
                     .addParameter("text", tagline.getText())
-                    .executeAndFetch(Tagline.class);
-            return matchingTaglines.isEmpty();
-        }
-    }
-
-    private boolean isNewElonTagline(Tagline tagline) {
-        String sql = "SELECT text, href, background FROM taglines " +
-                "WHERE text = :text AND background = :background";
-
-        try (Connection con = getDatabaseConnection().open()) {
-            List<Tagline> matchingTaglines = con.createQuery(sql)
-                    .addParameter("text", tagline.getText())
-                    .addParameter("background", tagline.getBackground())
                     .executeAndFetch(Tagline.class);
             return matchingTaglines.isEmpty();
         }
