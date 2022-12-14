@@ -111,7 +111,7 @@ public class TaglineManager {
             log("Twitter exception " + e);
             boolean hasUserBeenSuspended = e.getMessage().toLowerCase().contains("user has been suspended");
             if (hasUserBeenSuspended) {
-                return new Tagline("@elonmusk has suspended @elonjet's Twitter account", null, bannedImage);
+                return new Tagline("Elon Musk has suspended @elonjet's Twitter account (again)", null, bannedImage);
             }
         }
         return null;
